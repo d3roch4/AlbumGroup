@@ -1,9 +1,11 @@
-package br.com.d3roch4.albumgroup.albumgrupo;
+package br.com.d3roch4.albumgroup;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -14,11 +16,14 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 import br.com.d3roch4.albumgroup.R;
+import br.com.d3roch4.albumgroup.torrent.TorrentManager;
 
 
-public class NewGallery extends Activity {
+public class NewGalleryActivity extends Activity {
 
     private EditText dirAlbum;
     private EditText nameAlbum;
@@ -62,19 +67,25 @@ public class NewGallery extends Activity {
         File dir = new File(dirGalleryFull);
         if (!dir.exists()) {
             if (!dir.mkdirs()){
-                Log.e("createNewGallery :: ", "Problem creating Gallery folder: " + dirGalleryFull);
+                Log.e("createNewGallery :: ", "Problem to publish Gallery folder: " + dirGalleryFull);
                 Toast.makeText(getApplicationContext(), R.string.not_possible_create_gallery, Toast.LENGTH_LONG).show();
                 return;
             }
         }
-
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        try {
+            TorrentManager.create(dir, dir.listFiles(), sharedPrefs.getString("user_name", "NULL"));
+        } catch (Exception e) {
+            Log.e("createNewGallery :: ", "Problem  Gallery folder: " + dirGalleryFull);
+            Toast.makeText(getApplicationContext(), R.string.not_possible_create_gallery, Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
-            Log.d("NewGallery", String.format("Open Directory result Uri : %s", data.getData()));
+            Log.d("NewGalleryActivity", String.format("Open Directory result Uri : %s", data.getData()));
             dirAlbumStr = data.getDataString()+'/';
             dirAlbum.setText(dirAlbumStr+nameAlbum.getText());
         }

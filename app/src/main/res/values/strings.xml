@@ -11,5 +11,6 @@
     <string name="add_photo">Add Photo</string>
     <string name="create">Create</string>
     <string name="not_possible_create_gallery">:-( Not possible create gallery</string>
+    <string name="not_possible_publish_gallery">:-( Not possible publish gallery</string>
     <string name="not_possible_init_torrent_manager">:-( Not possible init Torrent Manager</string>
 </resources>
