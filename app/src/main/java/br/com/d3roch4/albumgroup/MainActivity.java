@@ -28,7 +28,7 @@ import br.com.d3roch4.albumgroup.view.GridViewAdapter;
 import br.com.d3roch4.albumgroup.view.ImageItem;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends ActionBarActivity {
 
     private TorrentManager torrent;
     private Collection<TrackedTorrent> trackedTorrentCollection;
@@ -45,21 +45,6 @@ public class MainActivity extends Activity {
             Log.e("new TorrentManager :: ", "Problem para iniciar o gerenciamento do torrent: " + e.getMessage());
             Toast.makeText(getApplicationContext(), R.string.not_possible_init_torrent_manager, Toast.LENGTH_LONG).show();
         }
-        trackedTorrentCollection = torrent.getTracker().getTrackedTorrents();
-        gridView = (GridView) findViewById(R.id.gridView);
-        gridAdapter = new GridViewAdapter(this, R.layout.grid_item_layout, getData());
-        gridView.setAdapter(gridAdapter);
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                ImageItem item = (ImageItem) parent.getItemAtPosition(position);
-                //Create intent
-                Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
-                intent.putExtra("title", item.getTitle());
-                intent.putExtra("image", item.getImage());
-                //Start details activity
-                startActivity(intent);
-            }
-        });
     }
 
     // Prepare some dummy data for gridview

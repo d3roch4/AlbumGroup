@@ -3,6 +3,8 @@ package br.com.d3roch4.albumgroup;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -18,8 +20,10 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.concurrent.ExecutionException;
 
 import br.com.d3roch4.albumgroup.R;
+import br.com.d3roch4.albumgroup.model.GalleryModel;
 import br.com.d3roch4.albumgroup.torrent.TorrentManager;
 
 
@@ -28,6 +32,7 @@ public class NewGalleryActivity extends Activity {
     private EditText dirAlbum;
     private EditText nameAlbum;
     private String dirAlbumStr;
+    private GalleryModel model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +40,7 @@ public class NewGalleryActivity extends Activity {
         setContentView(R.layout.activity_new_gallery);
 
         dirAlbum = (EditText) findViewById(R.id.dirAlbum);
-        dirAlbumStr = Environment.getExternalStorageDirectory()+"/Pictures/";
+        dirAlbumStr = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Pictures/";
 
         nameAlbum = (EditText)findViewById(R.id.nameAlbum);
         nameAlbum.setOnKeyListener(new View.OnKeyListener() {
@@ -52,32 +57,37 @@ public class NewGalleryActivity extends Activity {
                         startActivityForResult(intent, 1);
                     }
         });
-
-        ((Button)findViewById(R.id.create)).setOnClickListener(new View.OnClickListener() {
+        final Activity myactivity = this;
+        ((Button) findViewById(R.id.create)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createNewGallery();
+                try {
+                    Toast.makeText(getApplicationContext(), new CustomTask().execute(myactivity).get(), Toast.LENGTH_LONG).show();
+                    finish();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
 
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
+        model = new GalleryModel(sharedPrefs.getString("user_name", "NULL"));
     }
 
-    public void createNewGallery(){
-        String dirGalleryFull = dirAlbumStr+nameAlbum.getText();
-        File dir = new File(dirGalleryFull);
-        if (!dir.exists()) {
-            if (!dir.mkdirs()){
-                Log.e("createNewGallery :: ", "Problem to publish Gallery folder: " + dirGalleryFull);
-                Toast.makeText(getApplicationContext(), R.string.not_possible_create_gallery, Toast.LENGTH_LONG).show();
-                return;
+
+    private class CustomTask extends AsyncTask<Activity, Void, String> {
+        protected String doInBackground(Activity... activities) {
+            String dirGalleryFull = dirAlbumStr+nameAlbum.getText();
+            try {
+                if(!model.create(dirGalleryFull)){
+                    Log.e("createNewGallery :: ", "Problem to create GalleryModel folder: " + dirGalleryFull);
+                    return getResources().getString(R.string.not_possible_create_gallery);
+                }
+            } catch (Exception e) {
+                Log.e("TorrentManager.create", "Erro: " + e.toString());
+                return getResources().getString(R.string.not_possible_publish_gallery);
             }
-        }
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        try {
-            TorrentManager.create(dir, dir.listFiles(), sharedPrefs.getString("user_name", "NULL"));
-        } catch (Exception e) {
-            Log.e("createNewGallery :: ", "Problem  Gallery folder: " + dirGalleryFull);
-            Toast.makeText(getApplicationContext(), R.string.not_possible_create_gallery, Toast.LENGTH_LONG).show();
+            return getResources().getString(R.string.new_album_sucess_create);
         }
     }
 

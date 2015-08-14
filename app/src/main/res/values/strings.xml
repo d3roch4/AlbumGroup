@@ -13,4 +13,5 @@
     <string name="not_possible_create_gallery">:-( Not possible create gallery</string>
     <string name="not_possible_publish_gallery">:-( Not possible publish gallery</string>
     <string name="not_possible_init_torrent_manager">:-( Not possible init Torrent Manager</string>
+    <string name="new_album_sucess_create">;-) New Album sucess create!</string>
 </resources>
