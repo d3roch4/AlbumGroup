@@ -1,8 +1,6 @@
 package br.com.d3roch4.albumgroup;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -10,8 +8,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
@@ -23,7 +19,6 @@ import java.util.Collection;
 import java.util.List;
 
 import br.com.d3roch4.albumgroup.torrent.TorrentManager;
-import br.com.d3roch4.albumgroup.view.DetailsActivity;
 import br.com.d3roch4.albumgroup.view.GridViewAdapter;
 import br.com.d3roch4.albumgroup.view.ImageItem;
 
